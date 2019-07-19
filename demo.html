@@ -58,6 +58,7 @@
 	<script type="text/javascript">
 		function diffUsingJS(viewType) {
 			"use strict";
+			/*global difflib diffview*/
 			var byId = function(id) { return document.getElementById(id); },
 				base = difflib.stringAsLines(byId("baseText").value),
 				newtxt = difflib.stringAsLines(byId("newText").value),
@@ -79,13 +80,35 @@
 				viewType: viewType
 			}));
 		}
+
+		let autorecompareCkBx, sideBySideView;
+
+		function autocompare() {
+			if (autorecompareCkBx.checked) {
+				let compareDisplayType = (sideBySideView.checked ? 0 : 1);
+				diffUsingJS(compareDisplayType);
+			}
+		}
+		window.addEventListener('DOMContentLoaded', function() {
+			autorecompareCkBx = document.getElementById('autorecompare');
+			sideBySideView = document.getElementById('sidebyside');
+
+			let baseText = document.getElementById('baseText');
+			let newText = document.getElementById('newText');
+			baseText.addEventListener('change', autocompare);
+			baseText.addEventListener('input', autocompare);
+			newText.addEventListener('change', autocompare);
+			newText.addEventListener('input', autocompare);
+		});
 	</script>
 </head>
 
 <body>
 	<h1 class="top"><a href="http://github.com/cemerick/jsdifflib">jsdifflib</a> demo</h1>
 	<div class="top">
-		<strong>Context size (optional):</strong> <input type="text" id="contextSize" value="" />
+		<strong>Context size (optional):</strong> <input type="text" id="contextSize" value="10" />
+		<input type="checkbox" id="autorecompare" name="autorecompare" checked>
+		<label for="autorecompare">Re-compare automaticaly</label>
 	</div>
 	<div class="textInput">
 		<h2>Base Text</h2>
@@ -96,8 +119,8 @@
 		<textarea id="newText"></textarea>
 	</div>
 	<div class="viewType">
-		<input type="radio" name="_viewtype" id="sidebyside" onclick="diffUsingJS(0);" /> <label for="sidebyside">Side by Side Diff</label> &nbsp; &nbsp;
-		<input type="radio" name="_viewtype" id="inline" onclick="diffUsingJS(1);" /> <label for="inline">Inline Diff</label>
+		<input type="radio" name="_viewtype" id="sidebyside" onclick="diffUsingJS(0);" value="" checked /> <label for="sidebyside">Side by Side Diff</label> &nbsp; &nbsp;
+		<input type="radio" name="_viewtype" id="inline" onclick="diffUsingJS(1);" value="" /> <label for="inline">Inline Diff</label>
 	</div>
 	<div id="diffoutput"> </div>
 </body>
